@@ -1,12 +1,17 @@
 import { requireOwner } from "@/lib/dal";
 import { DashboardShell } from "@/components/dashboard-shell";
 
+// Matches PRD section 12 "NAVIGATION": Dashboard, Jobs, Clients, Trade
+// Invoicing, Finance, Invoices, Pots, Settings.
 const ADMIN_NAV = [
   { href: "/admin", label: "Dashboard" },
-  { href: "/admin/customers", label: "Customers" },
   { href: "/admin/jobs", label: "Jobs" },
+  { href: "/admin/clients", label: "Clients" },
+  { href: "/admin/trade-invoicing", label: "Trade Invoicing" },
   { href: "/admin/finance", label: "Finance" },
   { href: "/admin/invoices", label: "Invoices" },
+  { href: "/admin/pots", label: "Pots" },
+  { href: "/admin/settings", label: "Settings" },
 ];
 
 export default async function AdminLayout({

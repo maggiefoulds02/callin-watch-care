@@ -253,6 +253,16 @@ export function effectiveInvoiceStatus(invoice: Invoice): InvoiceStatus {
   return invoice.status;
 }
 
+export type BusinessSettings = {
+  id: 1;
+  trade_partner_name: string;
+  sweeping_hands_polishing_pct: number;
+  sweeping_hands_servicing_pct: number;
+  opening_bank_balance: number;
+  opening_sweeping_hands_balance: number;
+  opening_balance_date: string;
+};
+
 export type PotBalances = {
   bank_balance: number;
   sweeping_hands_pot: number;
