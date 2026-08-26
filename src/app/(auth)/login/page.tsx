@@ -10,7 +10,7 @@ export default async function LoginPage({
 }: PageProps<"/login">) {
   const params = await searchParams;
   const next = typeof params.next === "string" ? params.next : "/";
-  const needsSetup = !(await ownerAccountExists());
+  const needsOwnerSetup = !(await ownerAccountExists());
 
   return (
     <div className="flex min-h-full flex-1 items-center justify-center bg-navy-950 px-6 py-20">
@@ -22,23 +22,25 @@ export default async function LoginPage({
           Track your restoration
         </h1>
         <p className="mt-2 text-center text-sm text-silver-400">
-          Sign in with the email and password Oliver set up for you.
+          Sign in to track your watch&apos;s restoration.
         </p>
         <div className="mt-8">
           <LoginForm next={next} />
         </div>
         <p className="mt-6 text-center text-sm text-silver-500">
-          {needsSetup ? (
-            <>
-              First time here?{" "}
-              <Link href="/setup" className="text-silver-200 underline underline-offset-2">
-                Set up the owner account
-              </Link>
-            </>
-          ) : (
-            "Don't have a password yet? Ask Oliver — he can set one up for you."
-          )}
+          Don&apos;t have an account?{" "}
+          <Link href="/signup" className="text-silver-200 underline underline-offset-2">
+            Sign up
+          </Link>
         </p>
+        {needsOwnerSetup && (
+          <p className="mt-2 text-center text-sm text-silver-500">
+            Setting up for the first time?{" "}
+            <Link href="/setup" className="text-silver-200 underline underline-offset-2">
+              Set up the owner account
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );
