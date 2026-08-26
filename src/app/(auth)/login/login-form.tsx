@@ -51,9 +51,6 @@ export function LoginForm({ next }: { next: string }) {
       >
         {pending ? "Signing in…" : "Sign in"}
       </button>
-      <p className="text-center text-xs text-silver-500">
-        Don&apos;t have a password yet? Ask Oliver — he can set one up for you.
-      </p>
     </form>
   );
 }

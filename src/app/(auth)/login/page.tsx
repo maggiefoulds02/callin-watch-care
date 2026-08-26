@@ -27,14 +27,18 @@ export default async function LoginPage({
         <div className="mt-8">
           <LoginForm next={next} />
         </div>
-        {needsSetup && (
-          <p className="mt-6 text-center text-sm text-silver-500">
-            First time here?{" "}
-            <Link href="/setup" className="text-silver-200 underline underline-offset-2">
-              Set up the owner account
-            </Link>
-          </p>
-        )}
+        <p className="mt-6 text-center text-sm text-silver-500">
+          {needsSetup ? (
+            <>
+              First time here?{" "}
+              <Link href="/setup" className="text-silver-200 underline underline-offset-2">
+                Set up the owner account
+              </Link>
+            </>
+          ) : (
+            "Don't have a password yet? Ask Oliver — he can set one up for you."
+          )}
+        </p>
       </div>
     </div>
   );
