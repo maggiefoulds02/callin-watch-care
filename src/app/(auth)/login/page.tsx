@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { LoginForm } from "./login-form";
+import { ownerAccountExists } from "@/lib/owner-setup";
 
 export const metadata: Metadata = { title: "Log in — Callin Watch Care" };
 
@@ -8,6 +10,7 @@ export default async function LoginPage({
 }: PageProps<"/login">) {
   const params = await searchParams;
   const next = typeof params.next === "string" ? params.next : "/";
+  const needsSetup = !(await ownerAccountExists());
 
   return (
     <div className="flex min-h-full flex-1 items-center justify-center bg-navy-950 px-6 py-20">
@@ -24,6 +27,14 @@ export default async function LoginPage({
         <div className="mt-8">
           <LoginForm next={next} />
         </div>
+        {needsSetup && (
+          <p className="mt-6 text-center text-sm text-silver-500">
+            First time here?{" "}
+            <Link href="/setup" className="text-silver-200 underline underline-offset-2">
+              Set up the owner account
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );
