@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { JOB_STATUS_LABELS, type Job } from "@/lib/types";
+import { JOB_STATUS_LABELS, type CustomerVisibleJob } from "@/lib/types";
 
-export function ActiveJobBanner({ job }: { job: Job }) {
+export function ActiveJobBanner({ job }: { job: CustomerVisibleJob }) {
   const watchName = [job.watch_brand, job.watch_model]
     .filter(Boolean)
     .join(" ") || "Your watch";

@@ -4,10 +4,13 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getCurrentProfile } from "@/lib/dal";
 import {
   ACTIVE_JOB_STATUSES,
-  type Job,
+  type CustomerVisibleJob,
   type JobPhoto,
   type JobStatusEvent,
 } from "@/lib/types";
+
+const CUSTOMER_JOB_COLUMNS =
+  "id, job_number, job_type, customer_id, watch_brand, watch_model, watch_serial_number, watch_movement, watch_case_material, watch_strap_bracelet, customer_reference, current_status, intake_notes, expected_return_date, invoiced, created_at, updated_at";
 
 /**
  * Powers the homepage tracker banner: if the current visitor is logged in
@@ -15,7 +18,7 @@ import {
  * null for logged-out visitors, owners, and customers with no active job
  * — the homepage renders its normal hero in all of those cases.
  */
-export async function getActiveJobForCurrentCustomer(): Promise<Job | null> {
+export async function getActiveJobForCurrentCustomer(): Promise<CustomerVisibleJob | null> {
   const profile = await getCurrentProfile();
   if (!profile || profile.role !== "customer") return null;
 
@@ -23,9 +26,7 @@ export async function getActiveJobForCurrentCustomer(): Promise<Job | null> {
 
   const { data } = await supabase
     .from("jobs")
-    .select(
-      "id, job_number, customer_id, watch_brand, watch_model, watch_serial_number, watch_description, service_type, current_status, intake_notes, estimated_completion_date, created_at, updated_at, customers!inner(user_id)",
-    )
+    .select(`${CUSTOMER_JOB_COLUMNS}, customers!inner(user_id)`)
     .eq("customers.user_id", profile.id)
     .in("current_status", ACTIVE_JOB_STATUSES)
     .order("updated_at", { ascending: false })
@@ -37,7 +38,7 @@ export async function getActiveJobForCurrentCustomer(): Promise<Job | null> {
   // Strip the joined `customers` relation before returning — callers only
   // need the Job shape (Data Transfer Object pattern per Next.js's
   // data-security guide: return only what the caller needs).
-  const { customers: _customers, ...job } = data as Job & {
+  const { customers: _customers, ...job } = data as CustomerVisibleJob & {
     customers: unknown;
   };
   return job;
@@ -49,7 +50,7 @@ export async function getActiveJobForCurrentCustomer(): Promise<Job | null> {
  * independently — this query is the "close to the data" check the DAL
  * pattern calls for, not a substitute for RLS.
  */
-export async function getJobsForCurrentCustomer(): Promise<Job[]> {
+export async function getJobsForCurrentCustomer(): Promise<CustomerVisibleJob[]> {
   const profile = await getCurrentProfile();
   if (!profile || profile.role !== "customer") return [];
 
@@ -57,16 +58,14 @@ export async function getJobsForCurrentCustomer(): Promise<Job[]> {
 
   const { data } = await supabase
     .from("jobs")
-    .select(
-      "id, job_number, customer_id, watch_brand, watch_model, watch_serial_number, watch_description, service_type, current_status, intake_notes, estimated_completion_date, created_at, updated_at, customers!inner(user_id)",
-    )
+    .select(`${CUSTOMER_JOB_COLUMNS}, customers!inner(user_id)`)
     .eq("customers.user_id", profile.id)
     .order("updated_at", { ascending: false });
 
   if (!data) return [];
 
   return data.map((row) => {
-    const { customers: _customers, ...job } = row as Job & {
+    const { customers: _customers, ...job } = row as CustomerVisibleJob & {
       customers: unknown;
     };
     return job;
@@ -80,20 +79,18 @@ export async function getJobsForCurrentCustomer(): Promise<Job[]> {
  * this is the IDOR check the Next.js data-security guide calls out
  * explicitly (never trust a route param alone).
  */
-export async function getOwnJobById(jobId: string): Promise<Job | null> {
+export async function getOwnJobById(jobId: string): Promise<CustomerVisibleJob | null> {
   const profile = await getCurrentProfile();
   if (!profile || profile.role !== "customer") return null;
 
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("jobs")
-    .select(
-      "id, job_number, customer_id, watch_brand, watch_model, watch_serial_number, watch_description, service_type, current_status, intake_notes, estimated_completion_date, created_at, updated_at",
-    )
+    .select(CUSTOMER_JOB_COLUMNS)
     .eq("id", jobId)
     .maybeSingle();
 
-  return (data as Job) ?? null;
+  return (data as CustomerVisibleJob) ?? null;
 }
 
 /** Customer-visible timeline (internal_note already excluded by the view). */
@@ -115,7 +112,7 @@ export async function getPhotosForJob(jobId: string): Promise<JobPhoto[]> {
   const supabase = await createSupabaseServerClient();
   const { data } = await supabase
     .from("job_photos")
-    .select("id, job_id, status_event_id, storage_path, caption, is_visible_to_customer, created_at")
+    .select("id, job_id, status_event_id, stage, storage_path, caption, is_visible_to_customer, created_at")
     .eq("job_id", jobId)
     .order("created_at", { ascending: false });
 
