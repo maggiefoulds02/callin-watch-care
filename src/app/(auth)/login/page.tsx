@@ -19,7 +19,7 @@ export default async function LoginPage({
           Track your restoration
         </h1>
         <p className="mt-2 text-center text-sm text-silver-400">
-          Enter your email and we&apos;ll send you a secure sign-in link.
+          Sign in with the email and password Oliver set up for you.
         </p>
         <div className="mt-8">
           <LoginForm next={next} />

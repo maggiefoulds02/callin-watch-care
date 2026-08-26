@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getClientById, getJobsForClient, getInvoicesForClient } from "@/data/clients";
 import { updateClient } from "../actions";
 import { ClientForm } from "../client-form";
+import { PortalAccessForm } from "../portal-access-form";
 import { JOB_STATUS_LABELS, INVOICE_STATUS_LABELS, effectiveInvoiceStatus } from "@/lib/types";
 
 export default async function ClientDetailPage({
@@ -46,6 +47,20 @@ export default async function ClientDetailPage({
         <SummaryTile label="Total spend" value={`£${totalSpend.toFixed(2)}`} />
         <SummaryTile label="Outstanding" value={`£${outstanding.toFixed(2)}`} />
       </div>
+
+      {client.client_type === "retail" && (
+        <div className="mt-8">
+          <h2 className="font-serif text-lg text-navy-950">Portal access</h2>
+          <p className="mt-1 text-sm text-slate-500">
+            {client.user_id
+              ? "This client can log in to track their watch. Reset their password if they've lost it."
+              : "Give this client a login so they can track their watch's progress themselves."}
+          </p>
+          <div className="mt-3 max-w-2xl rounded border border-slate-200 bg-white p-4">
+            <PortalAccessForm clientId={client.id} hasAccount={Boolean(client.user_id)} />
+          </div>
+        </div>
+      )}
 
       <div className="mt-8 grid gap-8 lg:grid-cols-2">
         <div>
