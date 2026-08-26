@@ -1,0 +1,30 @@
+import type { Metadata } from "next";
+import { LoginForm } from "./login-form";
+
+export const metadata: Metadata = { title: "Log in — Callin Watch Care" };
+
+export default async function LoginPage({
+  searchParams,
+}: PageProps<"/login">) {
+  const params = await searchParams;
+  const next = typeof params.next === "string" ? params.next : "/";
+
+  return (
+    <div className="flex min-h-full flex-1 items-center justify-center bg-navy-950 px-6 py-20">
+      <div className="w-full max-w-sm">
+        <p className="text-center font-serif text-sm tracking-[0.25em] text-silver-600 uppercase">
+          Callin Watch Care
+        </p>
+        <h1 className="mt-3 text-center font-serif text-2xl text-silver-100">
+          Track your restoration
+        </h1>
+        <p className="mt-2 text-center text-sm text-silver-400">
+          Enter your email and we&apos;ll send you a secure sign-in link.
+        </p>
+        <div className="mt-8">
+          <LoginForm next={next} />
+        </div>
+      </div>
+    </div>
+  );
+}
