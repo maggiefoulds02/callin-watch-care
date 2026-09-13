@@ -19,8 +19,7 @@ const RANGE = Object.fromEntries(WATCH_PARTS.map((p) => [p.label, p.range])) as 
   [number, number]
 >;
 
-const BRASS = "#c9a24a";
-const SILVER = "#c9d3de";
+const MOVEMENT_METAL = "#9aa3ad";
 
 // Node names inside the source model (see watch-3d/README below) that make
 // up each part we explode. Everything not listed here (the case body) is
@@ -93,9 +92,31 @@ export function WatchModel({ progressRef }: { progressRef: React.RefObject<numbe
     return out;
   }, [groups]);
 
+  // For "radial" groups, which way is "outward"? The crown's own node
+  // transform sits almost exactly on the case's central axis — the CAD file
+  // baked its sideways offset into the mesh's vertices, not the node's
+  // position — so deriving a direction from `rest` (as we do for the "y"
+  // groups) normalizes a near-zero vector and points in a near-arbitrary,
+  // numerically-unstable direction (this is why the crown was drifting
+  // sideways into the case instead of straight out). Using the group's own
+  // geometric bounding-box centre instead gives the real offset regardless
+  // of where the modeller left the node's pivot.
+  const radialBasis = useMemo(() => {
+    const out: Partial<Record<GroupKey, THREE.Vector3>> = {};
+    for (const key of Object.keys(groups) as GroupKey[]) {
+      if (EXPLODE[key].axis !== "radial") continue;
+      const obj = groups[key];
+      if (!obj) continue;
+      const box = new THREE.Box3().setFromObject(obj);
+      if (box.isEmpty()) continue;
+      out[key] = model.worldToLocal(box.getCenter(new THREE.Vector3()));
+    }
+    return out;
+  }, [groups, model]);
+
   // The model ships with no visible internal movement (this is a marketing
   // render asset — the case back is solid, not modelled hollow), so we add
-  // a simple, clearly-stylised brass disc for that one step, matching how
+  // a simple, clearly-stylised silver disc for that one step, matching how
   // the site's earlier hand-built diagram represented it.
   const movementRest = useMemo(() => new THREE.Vector3(0, -0.05, 0), []);
   const movementRef = useRef<THREE.Group>(null);
@@ -123,10 +144,12 @@ export function WatchModel({ progressRef }: { progressRef: React.RefObject<numbe
       if (cfg.axis === "y") {
         targetScratch.set(restPos.x, restPos.y + cfg.distance * cfg.sign * e, restPos.z);
       } else {
-        // Radial: push outward along this part's own rest direction from
-        // the case centre, so the crown (off-centre in X/Z) moves outward
-        // rather than along an arbitrary fixed axis.
-        const dir = new THREE.Vector3(restPos.x, 0, restPos.z).normalize();
+        // Radial: push outward along this part's real geometric offset from
+        // the case centre (see radialBasis above), so the crown moves
+        // cleanly away from the case rather than along a near-arbitrary
+        // direction derived from a pivot that sits almost on the axis.
+        const basis = radialBasis[key] ?? restPos;
+        const dir = new THREE.Vector3(basis.x, 0, basis.z).normalize();
         targetScratch.copy(restPos).addScaledVector(dir, cfg.distance * e);
       }
       obj.position.lerp(targetScratch, lerpFactor);
@@ -150,18 +173,8 @@ export function WatchModel({ progressRef }: { progressRef: React.RefObject<numbe
       <group ref={movementRef} position={movementRest}>
         <mesh>
           <cylinderGeometry args={[0.3, 0.3, 0.05, 48]} />
-          <meshStandardMaterial color={BRASS} metalness={0.75} roughness={0.35} />
+          <meshStandardMaterial color={MOVEMENT_METAL} metalness={0.45} roughness={0.55} />
         </mesh>
-        {[
-          [0.11, 0.09],
-          [-0.09, 0.04],
-          [0, -0.11],
-        ].map(([x, z], i) => (
-          <mesh key={i} position={[x, 0.03, z]}>
-            <cylinderGeometry args={[0.06, 0.06, 0.03, 20]} />
-            <meshStandardMaterial color={SILVER} metalness={0.6} roughness={0.35} />
-          </mesh>
-        ))}
       </group>
     </group>
   );
