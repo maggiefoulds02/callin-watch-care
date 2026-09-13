@@ -42,3 +42,61 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans);
 }
+
+/* ---- Marketing site motion ---------------------------------------- */
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 32s linear infinite;
+}
+
+@keyframes tick-second-hand {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-second-hand {
+  animation: tick-second-hand 60s steps(60, end) infinite;
+  transform-origin: 50% 50%;
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 90s linear infinite;
+  transform-origin: 50% 50%;
+}
+
+/* Scroll-reveal: JS toggles [data-revealed] once a section enters view.
+   Sits behind a media query so it never hides content for users who
+   disable animation or if JS fails to run. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  [data-reveal][data-revealed="true"] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
