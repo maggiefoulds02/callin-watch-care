@@ -18,7 +18,9 @@ import { WatchModel } from "./watch-model";
 export function WatchScene({ progressRef }: { progressRef: React.RefObject<number> }) {
   return (
     <Canvas
-      camera={{ position: [0, 1.3, 5.4], fov: 32 }}
+      // Pulled back from a tighter first cut — see the comment on the
+      // model's scale in watch-model.tsx for why.
+      camera={{ position: [0, 1.85, 7.6], fov: 30 }}
       dpr={[1, 2]}
       gl={{ antialias: true, alpha: true }}
     >

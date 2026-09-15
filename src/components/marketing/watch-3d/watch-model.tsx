@@ -19,7 +19,7 @@ const RANGE = Object.fromEntries(WATCH_PARTS.map((p) => [p.label, p.range])) as 
   [number, number]
 >;
 
-const MOVEMENT_METAL = "#9aa3ad";
+const MOVEMENT_METAL = "#9ea7b1";
 
 // Node names inside the source model (see watch-3d/README below) that make
 // up each part we explode. Everything not listed here (the case body) is
@@ -31,6 +31,26 @@ const GROUP_NODE_NAMES = {
   dial: ["Watch_dial"],
   caseBack: ["Bellow_case_2.0"],
 } as const;
+
+// The three hand nodes, each already sitting on its own local pivot at the
+// dial's centre (see watch-3d/README) — spinning each one around its own
+// local Y axis (the axis running through the case, face-to-back) reads as
+// "the watch is running" without disturbing the pivot the modeller baked
+// in. Kept independent of scroll progress so the hands never stop, even
+// while a part is mid-explode. Rates are stylised (not real 12/60/60
+// ratios) — picked so the second hand reads as a clear, lively sweep
+// without looking frantic.
+const HAND_NODE_NAMES = {
+  hours: "Hours_hand",
+  minutes: "Minutes_hand",
+  seconds: "seconde_Hand",
+} as const;
+
+const HAND_SPEEDS: Record<keyof typeof HAND_NODE_NAMES, number> = {
+  hours: -(Math.PI * 2) / 240,
+  minutes: -(Math.PI * 2) / 48,
+  seconds: -(Math.PI * 2) / 8,
+};
 
 type GroupKey = keyof typeof GROUP_NODE_NAMES;
 
@@ -133,6 +153,15 @@ export function WatchModel({ progressRef }: { progressRef: React.RefObject<numbe
     return out;
   }, [groups, model]);
 
+  const hands = useMemo(() => {
+    const out: Partial<Record<keyof typeof HAND_NODE_NAMES, THREE.Object3D>> = {};
+    for (const key of Object.keys(HAND_NODE_NAMES) as (keyof typeof HAND_NODE_NAMES)[]) {
+      const obj = model.getObjectByName(HAND_NODE_NAMES[key]);
+      if (obj) out[key] = obj;
+    }
+    return out;
+  }, [model]);
+
   // The model ships with no visible internal movement (this is a marketing
   // render asset — the case back is solid, not modelled hollow), so we add
   // a simple, clearly-stylised silver disc for that one step, matching how
@@ -146,6 +175,10 @@ export function WatchModel({ progressRef }: { progressRef: React.RefObject<numbe
   useFrame((_, delta) => {
     if (spinGroup.current) {
       spinGroup.current.rotation.y += delta * 0.22;
+    }
+
+    for (const key of Object.keys(hands) as (keyof typeof HAND_NODE_NAMES)[]) {
+      hands[key]?.rotateY(delta * HAND_SPEEDS[key]);
     }
 
     const progress = progressRef.current ?? 0;
@@ -190,12 +223,21 @@ export function WatchModel({ progressRef }: { progressRef: React.RefObject<numbe
   });
 
   return (
-    <group ref={spinGroup} rotation={[0.15, 0, 0]} scale={3.6}>
+    // Scale (and the camera framing in watch-scene.tsx) were pulled back
+    // together from an earlier, tighter fit that clipped against the
+    // canvas edges: the case's lugs stick out well past its own diameter,
+    // and as the whole watch keeps slowly turning, those lugs swing close
+    // enough to the frustum edge at some angles to poke out of frame —
+    // worse once parts are exploded outward on top of that. Verified with
+    // a scripted sweep across a full rotation, at rest and fully exploded,
+    // checking every part's projected screen-space extent stays safely
+    // inside the frustum rather than just eyeballing a couple of angles.
+    <group ref={spinGroup} rotation={[0.15, 0, 0]} scale={2.3}>
       <primitive object={model} />
       <group ref={movementRef} position={movementRest}>
         <mesh>
-          <cylinderGeometry args={[0.3, 0.3, 0.025, 48]} />
-          <meshStandardMaterial color={MOVEMENT_METAL} metalness={0.6} roughness={0.45} />
+          <cylinderGeometry args={[0.3, 0.3, 0.014, 48]} />
+          <meshStandardMaterial color={MOVEMENT_METAL} metalness={0.92} roughness={0.16} envMapIntensity={1.4} />
         </mesh>
       </group>
     </group>
