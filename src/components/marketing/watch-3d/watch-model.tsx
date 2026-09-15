@@ -20,20 +20,6 @@ const RANGE = Object.fromEntries(WATCH_PARTS.map((p) => [p.label, p.range])) as 
 >;
 
 const MOVEMENT_METAL = "#9aa3ad";
-const MOVEMENT_RING = "#7d858e";
-const MOVEMENT_JEWEL = "#a3392c";
-
-// Small stand-ins for the raised rings, bridge and jewels a real movement
-// plate would show — the goal is just to read as "a machined mechanical
-// part" at a glance rather than a bare disc, not to model an actual
-// calibre.
-const MOVEMENT_RINGS = [0.24, 0.16] as const;
-const MOVEMENT_JEWELS: [number, number][] = [
-  [0.15, 0.09],
-  [-0.13, 0.11],
-  [0.06, -0.16],
-  [-0.16, -0.05],
-];
 
 // Node names inside the source model (see watch-3d/README below) that make
 // up each part we explode. Everything not listed here (the case body) is
@@ -211,22 +197,6 @@ export function WatchModel({ progressRef }: { progressRef: React.RefObject<numbe
           <cylinderGeometry args={[0.3, 0.3, 0.025, 48]} />
           <meshStandardMaterial color={MOVEMENT_METAL} metalness={0.6} roughness={0.45} />
         </mesh>
-        {MOVEMENT_RINGS.map((radius) => (
-          <mesh key={radius} rotation={[Math.PI / 2, 0, 0]} position={[0, 0.014, 0]}>
-            <torusGeometry args={[radius, 0.003, 8, 64]} />
-            <meshStandardMaterial color={MOVEMENT_RING} metalness={0.6} roughness={0.4} />
-          </mesh>
-        ))}
-        <mesh position={[0.08, 0.016, -0.05]}>
-          <cylinderGeometry args={[0.09, 0.09, 0.008, 32]} />
-          <meshStandardMaterial color={MOVEMENT_RING} metalness={0.6} roughness={0.4} />
-        </mesh>
-        {MOVEMENT_JEWELS.map(([x, z]) => (
-          <mesh key={`${x}-${z}`} position={[x, 0.019, z]}>
-            <sphereGeometry args={[0.012, 12, 12]} />
-            <meshStandardMaterial color={MOVEMENT_JEWEL} metalness={0.2} roughness={0.25} />
-          </mesh>
-        ))}
       </group>
     </group>
   );
