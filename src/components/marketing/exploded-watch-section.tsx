@@ -113,13 +113,15 @@ export function ExplodedWatchSection() {
             {WATCH_PARTS.map((part, i) => (
               <div
                 key={part.n}
-                className={`border-l-2 pl-5 transition-colors duration-300 ${
-                  i === activeIndex ? "border-silver-100" : "border-navy-700"
+                className={`rounded-r-sm border-l-2 py-2 pl-5 pr-4 transition-all duration-300 ${
+                  i === activeIndex
+                    ? "border-silver-100 bg-white/[0.07] shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]"
+                    : "border-navy-700 opacity-50"
                 }`}
               >
                 <dt
                   className={`font-serif text-lg transition-colors duration-300 ${
-                    i === activeIndex ? "text-silver-100" : "text-silver-500"
+                    i === activeIndex ? "font-semibold text-silver-100" : "text-silver-500"
                   }`}
                 >
                   <span className="mr-2 font-mono text-xs text-silver-600">

@@ -20,7 +20,7 @@ export function WatchScene({ progressRef }: { progressRef: React.RefObject<numbe
     <Canvas
       // Pulled back from a tighter first cut — see the comment on the
       // model's scale in watch-model.tsx for why.
-      camera={{ position: [0, 1.85, 7.6], fov: 30 }}
+      camera={{ position: [0, 2.17, 8.9], fov: 30 }}
       dpr={[1, 2]}
       gl={{ antialias: true, alpha: true }}
     >
