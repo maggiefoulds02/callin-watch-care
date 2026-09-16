@@ -1,0 +1,13 @@
+{
+  "name": "watch-model-processing",
+  "private": true,
+  "description": "One-off tooling to rebuild public/models/watch.glb from the original CAD export. Not part of the app's own dependency tree — run `npm install` in this folder before using process.mjs.",
+  "type": "module",
+  "dependencies": {
+    "@gltf-transform/core": "^4.5.0",
+    "@gltf-transform/extensions": "^4.5.0",
+    "@gltf-transform/functions": "^4.5.0",
+    "draco3dgltf": "^1.5.7",
+    "sharp": "^0.35.4"
+  }
+}
