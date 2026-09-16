@@ -15,7 +15,7 @@ import { HeroWatchModel } from "./hero-watch-model";
 export function HeroWatchScene() {
   return (
     <Canvas
-      camera={{ position: [0, 0.9, 6.4], fov: 26 }}
+      camera={{ position: [0, 0.9, 6.4], fov: 28 }}
       dpr={[1, 2]}
       gl={{ antialias: true, alpha: true }}
     >
