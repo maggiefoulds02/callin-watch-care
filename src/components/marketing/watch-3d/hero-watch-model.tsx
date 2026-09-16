@@ -66,7 +66,11 @@ export function HeroWatchModel() {
   });
 
   return (
-    <group rotation={[0.15, 0, 0]} scale={3}>
+    // Tilted noticeably more than the exploded view's own 0.15 rad (that
+    // view stays as it was — see watch-model.tsx) so the dial itself is the
+    // thing on display here, closer to looking straight down at the face
+    // than across it.
+    <group rotation={[0.55, 0, 0]} scale={3}>
       <primitive object={model} />
     </group>
   );
