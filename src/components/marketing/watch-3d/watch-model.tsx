@@ -45,6 +45,14 @@ const GROUP_NODE_NAMES = {
 const CROWN_NODE_NAME = "Adjustment_Wheels_A";
 const CROWN_EXPLODE_DISTANCE = 0.24;
 
+// The model now also carries its real metal bracelet (added for the hero
+// section — see hero-watch-model.tsx), all under this one wrapper node.
+// This diagram was tuned — camera, scale, explode distances, the clipping
+// verification in watch-scene.tsx's comments — entirely around the case on
+// its own, so the bracelet stays hidden here rather than reopening that
+// tuning for a part this view never shows.
+const STRAP_NODE_NAME = "Watch_Metal_strap_SUB";
+
 // The three hand nodes, each already sitting on its own local pivot at the
 // dial's centre (see watch-3d/README) — spinning each one around its own
 // local Y axis (the axis running through the case, face-to-back) reads as
@@ -84,10 +92,11 @@ const EXPLODE: Record<GroupKey, { distance: number; sign: 1 | -1 }> = {
 
 /**
  * The real, detailed Omega Seamaster CAD model Maggie supplied — with
- * Omega's own logo/wordmark stripped out (see the processing script this
- * was built with) so it reads as "a genuinely serious dive watch" rather
- * than a stylised placeholder, without reproducing anyone's trademark.
- * Draco-compressed and re-textured down from ~40MB to ~1MB for the web.
+ * Omega's own logo/wordmark stripped out (see scripts/watch-model/, which
+ * rebuilds public/models/watch.glb from the original CAD export) so it
+ * reads as "a genuinely serious dive watch" rather than a stylised
+ * placeholder, without reproducing anyone's trademark. Draco-compressed and
+ * re-textured down from ~40MB to a few MB for the web.
  *
  * Each named sub-assembly (crystal, bezel, crown, dial+hands, case back)
  * keeps its original modelled geometry and materials; we only read and
@@ -103,6 +112,11 @@ export function WatchModel({ progressRef }: { progressRef: React.RefObject<numbe
   // (or React Strict Mode's double-invoke) over the same shared Object3D
   // that drei's loader cache hands back.
   const model = useMemo(() => scene.clone(true), [scene]);
+
+  useMemo(() => {
+    const strap = model.getObjectByName(STRAP_NODE_NAME);
+    if (strap) strap.visible = false;
+  }, [model]);
 
   const groups = useMemo(() => {
     const found: Partial<Record<GroupKey, THREE.Object3D>> = {};
