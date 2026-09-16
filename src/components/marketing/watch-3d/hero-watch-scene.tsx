@@ -7,10 +7,9 @@ import { HeroWatchModel } from "./hero-watch-model";
 /**
  * Lighting matches the exploded-view scene (see watch-scene.tsx) so the
  * watch looks like the same physical object in both places. The camera
- * differs: static (no scroll-driven progress), and framed to fit the case
- * with the bracelet hanging down and off the bottom of the hero frame,
- * rather than the exploded view's pulled-back framing (which needs room for
- * parts to fly outward and the whole thing to keep turning).
+ * differs: static (no scroll-driven progress), framed a little closer since
+ * there's no explode/rotation motion to leave clipping margin for — only
+ * the straps drifting off the top/bottom edges, which is intentional here.
  */
 export function HeroWatchScene() {
   return (

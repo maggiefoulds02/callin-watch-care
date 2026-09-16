@@ -1,9 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ActiveJobBanner } from "@/components/active-job-banner";
 import { getActiveJobForCurrentCustomer } from "@/data/jobs";
 import { GlowField } from "@/components/marketing/texture";
 import { ExplodedWatchSection } from "@/components/marketing/exploded-watch-section";
+import { HeroWatchScene } from "@/components/marketing/watch-3d/hero-watch-scene";
 import { Reveal } from "@/components/marketing/reveal";
 import { Marquee } from "@/components/marketing/marquee";
 import {
@@ -133,32 +133,12 @@ export default async function HomePage() {
               className="animate-spin-slow absolute h-64 w-64 rounded-full border border-dashed border-white/15 md:h-[22rem] md:w-[22rem]"
               aria-hidden
             />
-            <Image
-              src="/brand/watch-illustration.png"
-              alt="Minimalist line illustration of a wristwatch"
-              width={420}
-              height={420}
-              priority
-              className="relative w-72 drop-shadow-[0_0_40px_rgba(199,211,222,0.25)] md:w-96"
-            />
-            {/* A slow, real second hand ticking over the dial */}
-            <svg
-              viewBox="0 0 100 100"
-              className="pointer-events-none absolute w-72 md:w-96"
-              aria-hidden
-            >
-              <line
-                x1="50"
-                y1="50"
-                x2="50"
-                y2="20"
-                stroke="#e7ecf2"
-                strokeWidth="0.6"
-                strokeLinecap="round"
-                className="animate-second-hand"
-                opacity={0.85}
-              />
-            </svg>
+            {/* The real 3D model, held still — only the hands move — with
+                two procedural straps standing in for the source CAD file's
+                missing strap geometry. */}
+            <div className="relative h-80 w-80 drop-shadow-[0_0_40px_rgba(199,211,222,0.25)] md:h-[26rem] md:w-[26rem]">
+              <HeroWatchScene />
+            </div>
           </div>
         </div>
       </section>
