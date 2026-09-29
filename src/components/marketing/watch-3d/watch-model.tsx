@@ -43,7 +43,11 @@ const GROUP_NODE_NAMES = {
 } as const;
 
 const CROWN_NODE_NAME = "Adjustment_Wheels_A";
-const CROWN_EXPLODE_DISTANCE = 0.24;
+// See the comment on EXPLODE below — this travels sideways (not along the
+// spin axis, unlike the other parts), so it's the one most exposed to the
+// bigger scale below, and is scaled down by the same factor for the same
+// reason.
+const CROWN_EXPLODE_DISTANCE = 0.14;
 
 // The model now also carries its real metal bracelet (added for the hero
 // section — see hero-watch-model.tsx), all under this one wrapper node.
@@ -83,11 +87,20 @@ type GroupKey = keyof typeof GROUP_NODE_NAMES;
 // worth more travel room than it was worth explode drama, so distances
 // were pulled in by the same factor scale went up by, keeping each part's
 // actual on-screen separation about the same as before.
+//
+// Pulled in again (by ~0.586x) when the case was made bigger still: scale
+// went up 3 -> 4 *and* the camera in watch-scene.tsx was brought in
+// proportionally more than that to make the case read as genuinely larger
+// rather than just filling the same frame from further back, so a part's
+// travel in screen pixels would otherwise have grown by scale-increase x
+// zoom-increase combined, not just one or the other. Shrinking these by
+// the same combined factor keeps every part's actual on-screen separation
+// where it was already verified safe, so only the case itself gets bigger.
 const EXPLODE: Record<GroupKey, { distance: number; sign: 1 | -1 }> = {
-  crystal: { distance: 0.336, sign: 1 },
-  bezel: { distance: 0.224, sign: 1 },
-  dial: { distance: 0.12, sign: 1 },
-  caseBack: { distance: 0.336, sign: -1 },
+  crystal: { distance: 0.197, sign: 1 },
+  bezel: { distance: 0.131, sign: 1 },
+  dial: { distance: 0.07, sign: 1 },
+  caseBack: { distance: 0.197, sign: -1 },
 };
 
 /**
@@ -261,7 +274,13 @@ export function WatchModel({ progressRef }: { progressRef: React.RefObject<numbe
     // a scripted sweep across a full rotation, at rest and fully exploded,
     // checking every part's projected screen-space extent stays safely
     // inside the frustum rather than just eyeballing a couple of angles.
-    <group ref={spinGroup} rotation={[0.15, 0, 0]} scale={3}>
+    // Scaled up again for a bigger diagram — the camera in watch-scene.tsx
+    // was brought in too (not just pulled back proportionally — that would
+    // have cancelled the size increase out), and EXPLODE/
+    // CROWN_EXPLODE_DISTANCE above were pulled in to compensate, so the
+    // case itself reads noticeably bigger without any part swinging
+    // further off-frame than the already-verified original.
+    <group ref={spinGroup} rotation={[0.15, 0, 0]} scale={4}>
       <primitive object={model} />
       <group ref={movementRef} position={movementRest}>
         <mesh>

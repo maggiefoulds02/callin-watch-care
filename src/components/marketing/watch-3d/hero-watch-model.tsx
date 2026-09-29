@@ -68,10 +68,11 @@ export function HeroWatchModel() {
   return (
     // Tilted noticeably more than the exploded view's own 0.15 rad (that
     // view stays as it was — see watch-model.tsx) so the dial itself is the
-    // thing on display here, closer to looking straight down at the face
-    // than across it. The small negative Z rotation is a roll — a ~12°
-    // clockwise tilt of the whole watch as seen on screen, purely stylistic.
-    <group rotation={[0.55, 0, -0.2094]} scale={3}>
+    // thing on display here, close to looking straight down at the face
+    // rather than across it. The small negative Z rotation is a roll — a
+    // ~12° clockwise tilt of the whole watch as seen on screen, purely
+    // stylistic.
+    <group rotation={[0.9, 0, -0.2094]} scale={3.3}>
       <primitive object={model} />
     </group>
   );
